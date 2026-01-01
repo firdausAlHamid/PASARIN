@@ -1,0 +1,94 @@
+sentra-government-intelligence/
+│
+├── backend/
+│   ├── core/
+│   │   ├── ingestion/
+│   │   │   ├── adapters/
+│   │   │   │   ├── http.adapter.ts
+│   │   │   │   ├── file.adapter.ts
+│   │   │   │   ├── message-queue.adapter.ts
+│   │   │   │   └── social.adapter.ts
+│   │   │   ├── ingestion.controller.ts
+│   │   │   └── ingestion.service.ts
+│   │   │
+│   │   ├── normalization/
+│   │   │   ├── schema-mapper.ts
+│   │   │   ├── data-validator.ts
+│   │   │   └── data-enricher.ts
+│   │   │
+│   │   ├── aggregation/
+│   │   │   ├── temporal-aggregator.ts
+│   │   │   ├── spatial-aggregator.ts
+│   │   │   └── multi-source-aggregator.ts
+│   │   │
+│   │   ├── analytics/
+│   │   │   ├── trend-analysis.ts
+│   │   │   ├── anomaly-detection.ts
+│   │   │   ├── sentiment-analysis.ts
+│   │   │   └── risk-scoring.ts
+│   │   │
+│   │   ├── alerting/
+│   │   │   ├── threshold.engine.ts
+│   │   │   ├── rule.engine.ts
+│   │   │   └── alert.dispatcher.ts
+│   │   │
+│   │   ├── governance/
+│   │   │   ├── data-lineage.ts
+│   │   │   ├── access-policy.ts
+│   │   │   └── audit-log.ts
+│   │
+│   ├── api/
+│   │   ├── auth/
+│   │   ├── datasets/
+│   │   ├── insights/
+│   │   ├── alerts/
+│   │   └── reports/
+│   │
+│   ├── database/
+│   │   ├── migrations/
+│   │   ├── seeds/
+│   │   └── schemas/
+│   │
+│   └── main.ts
+│
+├── web-dashboard/
+│   ├── modules/
+│   │   ├── overview/
+│   │   ├── trends/
+│   │   ├── anomalies/
+│   │   ├── sentiment/
+│   │   ├── heatmap/
+│   │   └── reports/
+│   │
+│   ├── auth/
+│   ├── api-client/
+│   └── ui/
+│
+├── shared/
+│   ├── types/
+│   ├── data-contracts/
+│   ├── enums/
+│   └── utils/
+│
+├── data-sources/
+│   ├── umkm/
+│   ├── market/
+│   ├── social-media/
+│   ├── public-reports/
+│   └── dummy/
+│
+├── docs/
+│   ├── system-overview.md
+│   ├── architecture.md
+│   ├── data-ingestion.md
+│   ├── analytics-engine.md
+│   ├── governance-model.md
+│   ├── deployment.md
+│   └── roadmap.md
+│
+├── infra/
+│   ├── docker/
+│   ├── kubernetes/
+│   └── ci-cd/
+│
+└── README.md
