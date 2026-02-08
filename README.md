@@ -1,2 +1,2 @@
 # PASARIN
-PASARIN adalah platform pencatatan usaha pedagang berbasis Telegram yang menyediakan dashboard web interaktif untuk UMKM serta sistem analitik pasar teragregasi bagi pemangku kebijakan.
+PASARIN adalah platform pencatatan usaha berbasis Telegram untuk pedagang pasar dan UMKM yang menyediakan pencatatan transaksi, pengingat jadwal seperti jatuh tempo utang/piutang, dashboard analitik berbasis web, serta insight bisnis berbasis AI untuk membantu pengambilan keputusan usaha
