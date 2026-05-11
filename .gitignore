@@ -47,3 +47,22 @@ public/**/*
 **/*.bak
 **/*.tmp
 **/*.temp
+
+# Lingkungan Virtual (Virtual Environment)
+venv/
+env/
+.venv/
+
+# File Variabel Lingkungan & Rahasia (SANGAT PENTING)
+.env
+
+# Cache Python & File Kompilasi
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*$py.class
+
+# File Sistem Operasi (Opsional tapi disarankan)
+.DS_Store
+Thumbs.db
