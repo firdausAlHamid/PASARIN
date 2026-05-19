@@ -52,31 +52,30 @@ Karena proyek ini sudah menggunakan **Docker**, Anda tidak perlu lagi menginstal
     ```
 
 3.  **Setup Kredensial Google Sheets**
+    ### Langkah 1: Buat Akun Robot & Download Kuncinya
+    
+    - Buka browser dan pergi ke [Google Cloud Console](https://console.cloud.google.com/).
+    - Buat Project baru.
+    - Cari di kolom pencarian atas: **Google Sheets API**, lalu klik **Enable** (Aktifkan).
+    - Cari lagi: **Google Drive API**, lalu klik **Enable** (Aktifkan).
+    - Masuk ke menu **IAM & Admin > Service Accounts** (Buka sidebar menu kiri `☰` jika tersembunyi).
+    - Klik **Create Service Account**, beri nama bebas (misal: `bot-pasarin`), lalu klik **Done**.
+    - Klik akun/email Service Account yang baru saja dibuat tersebut, masuk ke tab **Keys**.
+    - Klik **Add Key > Create new key > pilih JSON**, lalu klik **Create**.
+    - File JSON akan otomatis ter-download ke laptopmu.
 
-### Langkah 1: Buat Akun Robot & Download Kuncinya
-
-- Buka browser dan pergi ke [Google Cloud Console](https://console.cloud.google.com/).
-- Buat Project baru.
-- Cari di kolom pencarian atas: **Google Sheets API**, lalu klik **Enable** (Aktifkan).
-- Cari lagi: **Google Drive API**, lalu klik **Enable** (Aktifkan).
-- Masuk ke menu **IAM & Admin > Service Accounts** (Buka sidebar menu kiri `☰` jika tersembunyi).
-- Klik **Create Service Account**, beri nama bebas (misal: `bot-pasarin`), lalu klik **Done**.
-- Klik akun/email Service Account yang baru saja dibuat tersebut, masuk ke tab **Keys**.
-- Klik **Add Key > Create new key > pilih JSON**, lalu klik **Create**.
-- File JSON akan otomatis ter-download ke laptopmu.
-
-### Langkah 2: Pasang Kunci ke Proyek
-
-- Ganti nama file JSON yang baru saja kamu download menjadi **`credentials.json`** (pastikan menggunakan huruf kecil semua).
-- Pindahkan file `credentials.json` tersebut ke folder utama **PASARIN** (sejajar dengan file `docker-compose.yml` dan `.env`).
-
-### Langkah 3: Dapatkan Email Robot Asli
-
-- Buka file `credentials.json` tadi menggunakan Notepad atau VS Code.
-- Cari baris yang bertuliskan `"client_email"`. Di sebelahnya akan ada email asli yang bentuknya panjang dan unik (contoh: `bot-pasarin@pasarin-12345.iam.gserviceaccount.com`).
-- **Copy** email asli tersebut.
-- Buka Google Sheets yang ingin digunakan oleh UMKM, lalu klik tombol **Share/Bagikan** di pojok kanan atas.
-- Masukkan email asli tersebut dan beri akses sebagai **Editor**, lalu simpan.
+    ### Langkah 2: Pasang Kunci ke Proyek
+    
+    - Ganti nama file JSON yang baru saja kamu download menjadi **`credentials.json`** (pastikan menggunakan huruf kecil semua).
+    - Pindahkan file `credentials.json` tersebut ke folder utama **PASARIN** (sejajar dengan file `docker-compose.yml` dan `.env`).
+    
+    ### Langkah 3: Dapatkan Email Robot Asli
+    
+    - Buka file `credentials.json` tadi menggunakan Notepad atau VS Code.
+    - Cari baris yang bertuliskan `"client_email"`. Di sebelahnya akan ada email asli yang bentuknya panjang dan unik (contoh: `bot-pasarin@pasarin-12345.iam.gserviceaccount.com`).
+    - **Copy** email asli tersebut.
+    - Buka Google Sheets yang ingin digunakan oleh UMKM, lalu klik tombol **Share/Bagikan** di pojok kanan atas.
+    - Masukkan email asli tersebut dan beri akses sebagai **Editor**, lalu simpan.
 
 ## Perintah Bot Telegram (Bot Commands)
 
