@@ -55,6 +55,8 @@ env/
 
 # File Variabel Lingkungan & Rahasia (SANGAT PENTING)
 .env
+service_account.json
+credentials.json
 
 # Cache Python & File Kompilasi
 __pycache__/

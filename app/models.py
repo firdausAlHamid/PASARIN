@@ -11,11 +11,11 @@ class TransactionType(str, enum.Enum):
 
 class User(Base):
     __tablename__ = "users"
-    # ... sisa kode lainnya (id, telegram_user_id, dll)
     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
     telegram_user_id = Column(BigInteger, unique=True, index=True, nullable=False)
     owner_name = Column(String(100), nullable=False)
     business_name = Column(String(100), nullable=False)
+    spreadsheet_id = Column(String(255), nullable=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
@@ -23,7 +23,6 @@ class User(Base):
 
 class Transaction(Base):
     __tablename__ = "transactions"
-    # ... sisa kode lainnya
     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     transaction_type = Column(Enum(TransactionType), nullable=False)

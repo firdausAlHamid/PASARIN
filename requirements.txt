@@ -5,3 +5,4 @@ httpx
 sqlalchemy
 pymysql
 google-genai
+gspread

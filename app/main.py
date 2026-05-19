@@ -9,8 +9,8 @@ from fastapi.responses import HTMLResponse
 from app.database import engine, get_db
 from app import models
 from app.services.ocr_service import extract_receipt_data
+from app.services.sheets_service import append_to_sheet
 
-# Menyuruh SQLAlchemy membuat tabel di MySQL (jika belum ada)
 models.Base.metadata.create_all(bind=engine)
 
 load_dotenv()
@@ -71,53 +71,76 @@ async def telegram_webhook(request: Request, db: Session = Depends(get_db)):
             text_received = data["message"]["text"]
             first_name = data["message"]["chat"].get("first_name", "Pedagang")
             
+            # --- FITUR /start ---
             if text_received == "/start":
                 user = db.query(models.User).filter(models.User.telegram_user_id == chat_id).first()
                 if not user:
                     user = models.User(telegram_user_id=chat_id, owner_name=first_name, business_name=f"Toko {first_name}")
                     db.add(user); db.commit(); db.refresh(user)
-                    reply = f"Halo {first_name}, pendaftaran berhasil! Mau catat apa hari ini?"
+                    reply = f"Halo {first_name}, pendaftaran berhasil!\n\n💡 *Tips:* Jika ingin data masuk otomatis ke Spreadsheet, kirim link-nya dengan cara ketik:\n`/setsheet <link_google_sheets_anda>`\n\n*(Jangan lupa share akses Edit ke email bot ini terlebih dahulu)*"
                 else:
                     reply = f"Halo kembali, kak {first_name}! Tokomu '{user.business_name}' sudah siap."
                 await send_telegram_message(chat_id, reply)
             
-            # LOGIKA EKSEKUSI SIMPAN KE DATABASE
+            # --- FITUR BARU: /setsheet ---
+            elif text_received.startswith("/setsheet"):
+                # Pisahkan perintah dengan link-nya
+                parts = text_received.split(" ", 1)
+                if len(parts) > 1:
+                    sheet_url = parts[1].strip()
+                    user = db.query(models.User).filter(models.User.telegram_user_id == chat_id).first()
+                    
+                    if user:
+                        # Simpan ke database
+                        user.spreadsheet_id = sheet_url
+                        db.commit()
+                        await send_telegram_message(chat_id, "🔗 **Spreadsheet Berhasil Tersambung!**\nMulai sekarang, semua pengeluaran akan otomatis dicatat ke link tersebut.")
+                    else:
+                        await send_telegram_message(chat_id, "❌ Daftar dulu dengan ketik /start.")
+                else:
+                    await send_telegram_message(chat_id, "❌ Format salah. Contoh:\n`/setsheet https://docs.google.com/spreadsheets/d/...`")
+
+            # --- LOGIKA EKSEKUSI SIMPAN ---
             elif text_received.upper() == "SIMPAN":
                 if chat_id in pending_transactions:
                     data_to_save = pending_transactions[chat_id]
-                    
-                    # Cari ID user di database berdasarkan chat_id Telegram
                     user = db.query(models.User).filter(models.User.telegram_user_id == chat_id).first()
                     
                     if user:
                         try:
-                            # Buat objek transaksi baru
+                            # 1. Simpan ke MySQL
                             new_trx = models.Transaction(
-                                user_id=user.id,
-                                transaction_type="expense", # Asumsi struk belanja = pengeluaran
-                                amount=data_to_save['total_amount'],
-                                category=data_to_save['category'],
-                                description=f"Belanja di {data_to_save['merchant']}",
+                                user_id=user.id, transaction_type="expense", amount=data_to_save['total_amount'],
+                                category=data_to_save['category'], description=f"Belanja di {data_to_save['merchant']}",
                                 transaction_date=data_to_save['date']
                             )
-                            # Simpan permanen ke MySQL
-                            db.add(new_trx)
-                            db.commit()
+                            db.add(new_trx); db.commit()
                             
-                            # Hapus data dari memori sementara
+                            # 2. Simpan ke Google Sheets milik UMKM (JIKA ADA)
+                            sheet_message = ""
+                            if user.spreadsheet_id:
+                                sheet_status = append_to_sheet(
+                                    sheet_url=user.spreadsheet_id,
+                                    date=data_to_save['date'], 
+                                    tx_type="expense", 
+                                    merchant=data_to_save['merchant'],
+                                    category=data_to_save['category'], 
+                                    amount=data_to_save['total_amount']
+                                )
+                                if sheet_status:
+                                    sheet_message = "\n📝 *Tercatat juga di Spreadsheet milikmu!*"
+                                else:
+                                    sheet_message = "\n⚠️ *Gagal kirim ke Spreadsheet (Pastikan akses Editor sudah diberikan ke email bot).*"
+
                             del pending_transactions[chat_id]
-                            
-                            await send_telegram_message(chat_id, "💾 **Sukses!** Data transaksi telah dicatat ke database.")
+                            await send_telegram_message(chat_id, f"💾 **Sukses!** Transaksi disimpan.{sheet_message}")
                         except Exception as e:
-                            print(f"Error Database: {e}")
-                            await send_telegram_message(chat_id, "❌ Gagal menyimpan ke database. Cek format data.")
+                            print(f"Error: {e}")
+                            await send_telegram_message(chat_id, "❌ Gagal menyimpan data.")
                     else:
-                        await send_telegram_message(chat_id, "❌ Akunmu belum terdaftar. Ketik /start dulu ya.")
+                        await send_telegram_message(chat_id, "❌ Akun belum terdaftar.")
                 else:
-                    await send_telegram_message(chat_id, "🤔 Tidak ada struk yang sedang diproses. Silakan kirim foto struk terlebih dahulu.")
-            
-            else:
-                await send_telegram_message(chat_id, f"Sistem menerima: '{text_received}'. Kirim foto struk untuk mulai mencatat.")
+                    await send_telegram_message(chat_id, "🤔 Kirim foto struk terlebih dahulu.")
 
     return {"status": "ok"}
 

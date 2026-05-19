@@ -3,10 +3,10 @@ from google.genai import types
 import os
 from dotenv import load_dotenv
 import json
+import time # <--- Tambahkan library time
 
 load_dotenv()
 
-# Inisialisasi tanpa http_options terlebih dahulu untuk membiarkan SDK memilih default terbaik
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def extract_receipt_data(image_bytes: bytes):
@@ -21,7 +21,7 @@ def extract_receipt_data(image_bytes: bytes):
     """
     
     try:
-        # Gunakan ID model lengkap: 'gemini-1.5-flash'
+        # Percobaan Pertama: Gemini 2.5 Flash
         response = client.models.generate_content(
             model="gemini-2.5-flash", 
             contents=[
@@ -30,11 +30,7 @@ def extract_receipt_data(image_bytes: bytes):
             ]
         )
         
-        # Log untuk debugging jika perlu melihat output mentah
-        print("Raw AI Response:", response.text)
-        
         raw_text = response.text.strip()
-        # Pembersihan tag markdown JSON jika ada
         if "```json" in raw_text:
             raw_text = raw_text.split("```json")[1].split("```")[0].strip()
         elif "```" in raw_text:
@@ -43,17 +39,21 @@ def extract_receipt_data(image_bytes: bytes):
         return json.loads(raw_text)
         
     except Exception as e:
-        # Jika masih 404, kita coba fallback ke model 'gemini-1.5-flash-latest'
-        print(f"Gagal dengan flash, mencoba flash-latest... Error: {e}")
+        print(f"Percobaan pertama gagal (Error: {e}). Menunggu 2 detik untuk mencoba lagi...")
+        time.sleep(2) # Jeda 2 detik agar server Google tidak mengira kita spam
+        
         try:
+            # Percobaan Kedua: Fallback ke Gemini 1.5 Flash (tanpa tulisan -latest)
             response = client.models.generate_content(
-                model="gemini-1.5-flash-latest",
+                model="gemini-1.5-flash", 
                 contents=[prompt, types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")]
             )
+            
             raw_text = response.text.strip()
             if "```json" in raw_text:
                 raw_text = raw_text.split("```json")[1].split("```")[0].strip()
             return json.loads(raw_text)
+            
         except Exception as e2:
-            print(f"Semua model gagal: {e2}")
+            print(f"Kedua model gagal: {e2}")
             raise e2
