@@ -1,5 +1,4 @@
 # PASARIN
-
 PASARIN adalah platform pencatatan usaha berbasis Telegram yang dirancang untuk membantu pedagang, UMKM, dan pelaku usaha secara umum dalam mengelola aktivitas bisnis sehari-hari. Platform ini menyediakan fitur pencatatan transaksi, OCR cerdas untuk membaca struk belanja, serta integrasi pencatatan otomatis langsung ke Google Sheets milik masing-masing pengguna (Multi-Tenant SaaS).
 
 ## Fitur Utama
